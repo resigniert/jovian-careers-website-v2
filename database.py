@@ -19,8 +19,9 @@ engine = create_engine(db_connection_str,
   result_single_dict = dict(result_single._mapping)
   print(type(result_single_dict))
   print(result_single_dict)'''
-    
-def load_job_from_DB():
+
+
+def load_jobs_from_DB():
   with engine.connect() as conn:
     result = conn.execute(text("SELECT * FROM jobs"))
     result_list = result.all()
@@ -29,3 +30,27 @@ def load_job_from_DB():
       row_dict = dict(row._mapping)
       jobs_dict.append(row_dict)
   return jobs_dict
+
+
+def load_job_from_DB(id):
+  with engine.connect() as conn:
+    result = conn.execute(
+      text(f"SELECT * FROM jobs WHERE id={id}")
+    )
+    row = result.all()
+    if len(row) == 0:
+      return
+    else:
+      return dict(row[0]._mapping)
+
+
+def add_application_to_DB(data, job):
+  with engine.connect() as conn:
+    query = text("INSERT INTO applications (job_id, full_name, email, linkedin_url, education, work_experience, resume_url) VALUES (:job_id, :full_name, :email, :linkedin_url, :education, :work_experience, :resume_url)")
+    conn.execute(query,
+                job_id=id,
+                full_name=data[0],
+                email=data[1],
+                linkedin_url=data[2],
+                education=data[3],
+                work_experience=data[4])
